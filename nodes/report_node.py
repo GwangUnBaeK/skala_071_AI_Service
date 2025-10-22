@@ -12,6 +12,8 @@ from config.settings import settings
 import markdown2
 from weasyprint import HTML
 from io import BytesIO
+import warnings
+warnings.filterwarnings("ignore", message=".*instantiateVariableFont.*", category=UserWarning)
 
 def generate_trend_detail(trend: dict, llm: ChatOpenAI) -> str:
     """각 트렌드 상세 내용 생성 (5-6페이지 분량)"""
@@ -72,7 +74,7 @@ McKinsey, Gartner 스타일의 전문적이고 데이터 기반 보고서를 작
 
 **3.2 시장 규모 및 성장**
 - TAM: ${tam:,} (2025년 기준)
-- 2030년 예상: ${tam * (1 + cagr)**5:,.0f}
+- 2030년 예상: ${future_tam:,.0f}
 - 주요 산업: {industries}
 - 지역별 분포: {regions}
 
@@ -358,7 +360,8 @@ $$
 
 """
     
-    return appendix.format(analysis_date=datetime.now().strftime("%Y년 %m월 %d일"))
+    analysis_date = datetime.now().strftime("%Y년 %m월 %d일")
+    return appendix.replace("{analysis_date}", analysis_date)
 
 def markdown_to_pdf(markdown_text: str, output_path: str):
     """Markdown을 PDF로 변환"""
@@ -740,5 +743,5 @@ def report_generation_node(state: GraphState) -> GraphState:
             "role": "assistant",
             "content": f"보고서 생성 완료 (MD + PDF)"
         }],
-        "current_step": "report_completed"
+        "step_report": "completed"
     }

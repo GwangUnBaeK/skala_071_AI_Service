@@ -99,5 +99,5 @@ def tech_analysis_node(state: GraphState) -> GraphState:
             "role": "assistant",
             "content": f"기술 분석 완료: {len(tech_trends)}개 트렌드 발굴"
         }],
-        "current_step": "tech_analyzed"
+        "step_tech": "completed"
     }

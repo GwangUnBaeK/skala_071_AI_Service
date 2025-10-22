@@ -97,5 +97,5 @@ def market_analysis_node(state: GraphState) -> GraphState:
             "role": "assistant",
             "content": f"시장 분석 완료: {len(market_demands)}개 수요 분석"
         }],
-        "current_step": "market_analyzed"
+        "step_market": "completed"
     }

@@ -85,5 +85,5 @@ def data_collector_node(state: GraphState) -> GraphState:
             "role": "assistant",
             "content": f"데이터 수집 완료: 논문 {len(papers)}개, GitHub {len(github_repos)}개"
         }],
-        "current_step": "data_collected"
+        "step_collector": "completed"
     }

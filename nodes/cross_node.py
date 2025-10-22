@@ -137,5 +137,5 @@ def cross_analysis_node(state: GraphState) -> GraphState:
             "role": "assistant",
             "content": f"Top 5 트렌드 선정 완료"
         }],
-        "current_step": "cross_analyzed"
+        "step_cross": "completed"
     }

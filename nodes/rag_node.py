@@ -89,7 +89,7 @@ def rag_analysis_node(state: GraphState) -> GraphState:
                 "role": "assistant",
                 "content": f"RAG 분석 완료: {len(rag_result['answer'])}자 인사이트 생성"
             }],
-            "current_step": "rag_completed"
+            "step_rag": "completed"
         }
         
     except Exception as e:
