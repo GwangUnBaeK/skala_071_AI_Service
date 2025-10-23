@@ -8,20 +8,26 @@ load_dotenv()
 class Settings:
     """전역 설정"""
     
+    # LLM 설정 
+    LLM = {
+        "model": "gpt-4o-mini",
+        "temperature": 0
+    }
+
     # API Keys
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
     GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
     TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
     
-    # LangSmith (선택)
+    # LangSmith 
     LANGCHAIN_TRACING_V2 = os.getenv("LANGCHAIN_TRACING_V2", "false")
     LANGCHAIN_API_KEY = os.getenv("LANGCHAIN_API_KEY", "")
     
     # Analysis Configuration
     ANALYSIS = {
         "date_range": {
-            "start": date(2023, 1, 1),
-            "end": date(2025, 10, 21)
+            "start": "2023-01-01",  # ✅ 문자열이어야 함
+            "end": date.today().isoformat()  # ✅ 또는 이것도 문자열
         },
         "keywords": [
             "generative AI",
