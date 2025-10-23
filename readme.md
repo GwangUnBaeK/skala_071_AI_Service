@@ -33,13 +33,9 @@
 ## 🧹 Architecture
 
 ### 🔹 Workflow 구성
-```
-
-<img width="1006" height="1500" alt="image" src="https://github.com/user-attachments/assets/1498533d-ea21-4522-a2bb-30b6a59763f8" />
 
 <img width="1017" height="1506" alt="Untitled diagram-2025-10-23-064243" src="https://github.com/user-attachments/assets/654f327f-8598-4f1b-9d4a-198378107df6" />
 
-```
 
 ### 🔹 Graph Framework
 - **Framework** : LangGraph + LangChain  
