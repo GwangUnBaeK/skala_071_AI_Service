@@ -34,19 +34,8 @@
 
 ### 🔹 Workflow 구성
 ```
-START
-↓
-collector (데이터 수집)
-↹ ↸
-tech_analyzer market_analyzer
-↸ ↹
-rag_analyzer (✨ RAG 기반 분석)
-↓
-cross_analyzer (교차 스코어링)
-↓
-report_writer (PDF 보고서 생성)
-↓
-END
+<img width="1017" height="1506" alt="Untitled diagram-2025-10-23-064243" src="https://github.com/user-attachments/assets/654f327f-8598-4f1b-9d4a-198378107df6" />
+
 ```
 
 ### 🔹 Graph Framework
