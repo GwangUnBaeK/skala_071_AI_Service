@@ -34,7 +34,7 @@
 
 ### 🔹 Workflow 구성
 ```
-![Uploading Untitled diagram-2025-10-23-064243.png…]()
+<img width="1017" height="1506" alt="Untitled diagram-2025-10-23-064243" src="https://github.com/user-attachments/assets/3a4af1f7-84ba-432c-a86a-fe0328667869" />
 
 ```
 
