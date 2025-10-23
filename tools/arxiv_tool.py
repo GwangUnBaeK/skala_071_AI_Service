@@ -5,6 +5,7 @@ import arxiv
 from datetime import datetime, date
 import sys
 import os
+import time  # ✅ 추가
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from config.settings import settings
@@ -28,10 +29,11 @@ def search_arxiv_papers(keywords: List[str], max_results: int = 200) -> List[Dic
     start_date = settings.ANALYSIS["date_range"]["start"]
     end_date = settings.ANALYSIS["date_range"]["end"]
     
-    for keyword in keywords:
+    for idx, keyword in enumerate(keywords, 1):
         try:
-            logger.info(f"   검색 중: '{keyword}'")
+            logger.info(f"   [{idx}/{len(keywords)}] 검색 중: '{keyword}'")
             
+            # ✅ 한 번에 가져오기 (페이지네이션 제거)
             search = arxiv.Search(
                 query=keyword,
                 max_results=max_results,
@@ -47,19 +49,23 @@ def search_arxiv_papers(keywords: List[str], max_results: int = 200) -> List[Dic
                     papers.append({
                         "id": result.entry_id,
                         "title": result.title,
-                        "authors": [a.name for a in result.authors][:5],  # 최대 5명
-                        "abstract": result.summary[:500],  # 500자 제한
+                        "authors": [a.name for a in result.authors][:5],
+                        "abstract": result.summary[:500],
                         "publish_date": pub_date.isoformat(),
                         "keywords": [keyword],
                         "url": result.entry_id
                     })
                     count += 1
             
-            logger.info(f"   ✓ '{keyword}': {count}개 수집")
+            logger.info(f"      ✓ {count}개 수집")
+            
+            # ✅ Rate limit 방지 (키워드 간 대기)
+            if idx < len(keywords):
+                time.sleep(3)  # 3초 대기
             
         except Exception as e:
-            logger.error(f"   ✗ '{keyword}' 검색 실패: {e}")
+            logger.error(f"      ✗ '{keyword}' 검색 실패: {e}")
             continue
     
-    logger.info(f"✅ arXiv 총 {len(papers)}개 논문 수집 완료")
+    logger.info(f"✅ arXiv 총 {len(papers)}개 논문 수집 완료\n")
     return papers

@@ -36,8 +36,8 @@ class Settings:
     
     # Data Collection Limits
     LIMITS = {
-        "arxiv_max_per_keyword": 200,
-        "github_max_per_keyword": 50,
+        "arxiv_max_per_keyword": 100,
+        "github_max_per_keyword": 30,
         "github_min_stars": 100,
         "tavily_max_results": 10
     }

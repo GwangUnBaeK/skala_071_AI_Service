@@ -23,7 +23,7 @@ def search_google_trends(keywords: List[str], timeframe: str = '2023-01-01 2025-
     """
     logger.info(f"📊 Google Trends 검색 시작 (키워드: {len(keywords)}개)")
     
-    pytrends = TrendReq(hl='en-US', tz=360)
+    pytrends = TrendReq(hl='en-US', tz=360, timeout=(10, 25))  # ✅ 타임아웃 증가
     trends_data = {}
     
     # Google Trends는 한 번에 최대 5개만 가능
@@ -35,8 +35,21 @@ def search_google_trends(keywords: List[str], timeframe: str = '2023-01-01 2025-
         try:
             logger.info(f"   배치 {i//batch_size + 1} 처리 중: {batch}")
             
-            pytrends.build_payload(batch, timeframe=timeframe)
-            data = pytrends.interest_over_time()
+            # ✅ 재시도 로직 추가
+            max_retries = 3
+            for retry in range(max_retries):
+                try:
+                    pytrends.build_payload(batch, timeframe=timeframe)
+                    data = pytrends.interest_over_time()
+                    break  # 성공하면 루프 탈출
+                    
+                except Exception as e:
+                    if retry < max_retries - 1:
+                        wait_time = (retry + 1) * 10  # 10초, 20초, 30초
+                        logger.warning(f"      ⚠️ Rate limit, {wait_time}초 대기 후 재시도...")
+                        time.sleep(wait_time)
+                    else:
+                        raise  # 마지막 시도 실패 시 예외 발생
             
             if not data.empty:
                 for keyword in batch:
@@ -48,16 +61,19 @@ def search_google_trends(keywords: List[str], timeframe: str = '2023-01-01 2025-
                         }
                         
                         avg_score = data[keyword].mean()
-                        logger.info(f"   ✓ '{keyword}': 평균 {avg_score:.1f}")
+                        logger.info(f"      ✓ '{keyword}': 평균 {avg_score:.1f}")
             
-            # Rate limit 방지
-            time.sleep(1)
+            # ✅ 배치 간 대기 시간 증가
+            time.sleep(5)
             
         except Exception as e:
-            logger.error(f"   ✗ 배치 검색 실패: {e}")
+            logger.error(f"      ✗ 배치 검색 실패: {e}")
             # 실패해도 계속 진행
             for keyword in batch:
                 trends_data[keyword] = {}
+            
+            # ✅ 실패 시 더 긴 대기
+            time.sleep(30)
     
-    logger.info(f"✅ Google Trends 수집 완료 ({len(trends_data)}개)")
+    logger.info(f"✅ Google Trends 수집 완료 ({len(trends_data)}개)\n")
     return trends_data

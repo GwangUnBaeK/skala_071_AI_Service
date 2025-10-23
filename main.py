@@ -6,6 +6,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from graph.workflow import create_workflow, visualize_workflow
 from config.settings import settings
 from utils.logger import logger
+from utils.visualizer import plot_trend_scores, plot_score_breakdown
 from datetime import datetime
 
 def main():
@@ -21,11 +22,9 @@ def main():
     logger.info(f"🎯 목표: Top {settings.ANALYSIS['num_trends']}개 트렌드 발굴\n")
     
     # 1. Workflow 생성
-    logger.info("🏗️  Workflow 생성 중...\n")
     app = create_workflow()
     
     # 2. 그래프 시각화
-    logger.info("📊 Workflow 구조 시각화:\n")
     visualize_workflow(app)
     
     # 3. 초기 상태 설정
@@ -52,15 +51,14 @@ def main():
     
     # 5. 그래프 실행
     logger.info("\n" + "="*70)
-    logger.info("▶️  전체 파이프라인 실행 시작 (병렬 실행 모드)")
+    logger.info("▶️  전체 파이프라인 실행 시작")
     logger.info("="*70 + "\n")
     
     try:
-        # 완료된 단계 추적
         completed_steps = set()
         
         for event in app.stream(initial_state, config, stream_mode="values"):
-            # 각 노드별 완료 상태 체크 및 출력
+            # 각 노드별 완료 상태 체크
             if event.get("step_collector") and "collector" not in completed_steps:
                 logger.info("\n" + "="*70)
                 logger.info("✅ Agent 1: 데이터 수집 완료")
@@ -137,6 +135,15 @@ def main():
                 logger.info(f"   {trend['rank']}. {trend['trend_keyword']} ({trend['final_score']:.1f}점)")
                 logger.info(f"      - 기술: {trend['tech']['tech_name']} ({trend['tech']['maturity_score']:.1f})")
                 logger.info(f"      - 시장: {trend['market']['demand_name']} ({trend['market']['opportunity_score']:.1f})")
+            
+            # ✅ 시각화 생성
+            logger.info(f"\n📊 시각화 생성 중...")
+            try:
+                plot_trend_scores(final_state["top_5_trends"])
+                plot_score_breakdown(final_state["top_5_trends"])
+                logger.info("   ✓ 차트 생성 완료")
+            except Exception as e:
+                logger.warning(f"   ⚠️ 차트 생성 실패: {e}")
         
         # 수집된 데이터 통계
         logger.info(f"\n📊 수집 데이터 통계:")
@@ -145,15 +152,6 @@ def main():
         logger.info(f"   - 기술 트렌드: {len(final_state.get('tech_trends', []))}개")
         logger.info(f"   - 시장 수요: {len(final_state.get('market_demands', []))}개")
         logger.info(f"   - RAG 분석: {'완료' if final_state.get('rag_analysis', {}).get('answer') else '없음'}")
-        
-        # 완료된 단계 출력
-        logger.info(f"\n✅ 완료된 단계:")
-        logger.info(f"   - Collector: {final_state.get('step_collector', 'N/A')}")
-        logger.info(f"   - Tech: {final_state.get('step_tech', 'N/A')}")
-        logger.info(f"   - Market: {final_state.get('step_market', 'N/A')}")
-        logger.info(f"   - RAG: {final_state.get('step_rag', 'N/A')}")
-        logger.info(f"   - Cross: {final_state.get('step_cross', 'N/A')}")
-        logger.info(f"   - Report: {final_state.get('step_report', 'N/A')}")
         
         # 에러 로그 확인
         if final_state.get("error_log"):
@@ -171,7 +169,9 @@ def main():
         return True
         
     except KeyboardInterrupt:
-        logger.info("\n\n⚠️  사용자에 의해 중단됨\n")
+        logger.info("\n\n⚠️  사용자에 의해 중단됨")
+        logger.info(f"   체크포인트 ID: {config['configurable']['thread_id']}")
+        logger.info(f"   재개하려면: python scripts/resume_analysis.py --thread-id {config['configurable']['thread_id']}\n")
         return False
         
     except Exception as e:

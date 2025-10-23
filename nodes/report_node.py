@@ -131,6 +131,15 @@ McKinsey, Gartner 스타일의 전문적이고 데이터 기반 보고서를 작
     
     # GitHub 프로젝트
     github_projects = ", ".join(trend["tech"].get("related_projects", ["없음"])[:3])
+
+    tam_usd = trend["market"].get("tam_usd", 0)
+    cagr = trend["market"].get("cagr")
+    years_to_projection = 5  # 2025 → 2030 기준
+    if tam_usd and cagr is not None:
+        projected_future_tam = int(tam_usd * ((1 + cagr) ** years_to_projection))
+    else:
+        projected_future_tam = int(tam_usd)
+
     
     response = llm.invoke(prompt.format_messages(
         rank=trend["rank"],
@@ -140,7 +149,7 @@ McKinsey, Gartner 스타일의 전문적이고 데이터 기반 보고서를 작
         market_name=trend["market"]["demand_name"],
         market_problem=trend["market"].get("problem_statement", "시장 수요 존재"),
         opportunity=trend["market"]["opportunity_score"],
-        tam=trend["market"]["tam_usd"],
+        tam=tam_usd,
         cagr=trend["market"]["cagr"] * 100,
         competition=trend["competition"],
         paper_count=trend["tech"].get("paper_count", 0),
@@ -149,7 +158,8 @@ McKinsey, Gartner 스타일의 전문적이고 데이터 기반 보고서를 작
         target_companies=trend["market"].get("target_companies", 0),
         industries=", ".join(trend["market"].get("industries", ["다양한 산업"])),
         regions=", ".join(trend["market"].get("regions", ["글로벌"])),
-        rag_insight=rag_insight
+        rag_insight=rag_insight,
+        future_tam=projected_future_tam
     ))
     
     return response.content
