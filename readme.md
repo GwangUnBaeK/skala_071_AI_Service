@@ -34,6 +34,7 @@
 
 ### 🔹 Workflow 구성
 ```
+![Uploading Untitled diagram-2025-10-23-064243.png…]()
 
 ```
 
