@@ -34,7 +34,50 @@
 
 ### 🔹 Workflow 구성
 ```
-<img width="1017" height="1506" alt="Untitled diagram-2025-10-23-064243" src="https://github.com/user-attachments/assets/3a4af1f7-84ba-432c-a86a-fe0328667869" />
+flowchart TD
+    %% ===== Nodes =====
+    START([START])
+    A1["Agent 1: 데이터 수집"]
+    A2["Agent 2: 기술 트렌드 분석"]
+    A3["Agent 3: 시장 수요 분석"]
+    A4["Agent 4: RAG 기반 통합 분석"]
+    A5["Agent 5: 트렌드 교차 분석"]
+    A6[["Agent 6: 트렌드 보고서 작성"]]
+    END(["최종 보고서 출력"])
+
+    %% ===== Flow =====
+    START --> A1
+    A1 -->|"논문·GitHub·투자·검색량"| A2
+    A1 -->|"시장 리포트·정책 문서"| A3
+    A2 -->|"기술별 인사이트"| A4
+    A3 -->|"시장별 인사이트"| A4
+    A4 -->|"통합 RAG 결과"| A5
+    A5 -->|"5대 트렌드 + 기회 점수"| A6
+    A6 --> END
+
+    %% ===== Parallel Group (시각적 묶음) =====
+    subgraph "병렬 분석"
+        direction LR
+        A2
+        A3
+    end
+
+    %% ===== Styles =====
+    classDef startStyle fill:#e1f5ff,stroke:#29b6f6,stroke-width:1px,color:#01579b
+    classDef endStyle fill:#c8e6c9,stroke:#43a047,stroke-width:1px,color:#1b5e20
+    classDef collect fill:#fff9c4,stroke:#fbc02d,color:#795548
+    classDef analyze fill:#ffe0b2,stroke:#ff9800,color:#4e342e
+    classDef rag fill:#d1c4e9,stroke:#7e57c2,color:#311b92
+    classDef cross fill:#ffccbc,stroke:#ff7043,color:#4e342e
+    classDef report fill:#f8bbd0,stroke:#ec407a,color:#4a148c
+
+    class START startStyle
+    class END endStyle
+    class A1 collect
+    class A2,A3 analyze
+    class A4 rag
+    class A5 cross
+    class A6 report
 
 ```
 
